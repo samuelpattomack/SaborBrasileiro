@@ -1,6 +1,6 @@
 # SaborBrasileiro — Marketplace de Delivery de Comida Caseira
 
-Repositório da Entrega 1 do projeto **SaborBrasileiro**, disciplina de Engenharia de Software.
+Repositório da Entrega 1 do projeto **SaborBrasileiro**, disciplina de Desenvolvimento de Sistemas 2.
 
 Esta entrega cobre as seguintes etapas do processo:
 
