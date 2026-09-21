@@ -1,0 +1,42 @@
+@startuml SaborBrasileiro - Fluxo de Realizar Pedido
+
+skinparam ActivityBackgroundColor #f2f2f2
+skinparam ActivityBorderColor #555555
+skinparam ArrowColor #555555
+
+|Cliente|
+start
+:Buscar pratos;
+:Selecionar itens do cardápio;
+if (Possui cupom?) then (sim)
+  :Aplicar cupom de desconto;
+else (não)
+endif
+:Confirmar pedido;
+:Efetuar pagamento;
+
+|Cozinheiro|
+:Receber notificação do pedido;
+if (Aceita o pedido?) then (sim)
+  :Preparar pedido;
+  :Atualizar status para "pronto";
+else (não)
+  :Recusar pedido;
+  |Cliente|
+  :Receber notificação de recusa;
+  stop
+endif
+
+|Entregador|
+:Visualizar entregas disponíveis;
+:Aceitar entrega;
+:Retirar pedido;
+:Realizar entrega;
+:Atualizar status para "entregue";
+
+|Cliente|
+:Receber pedido;
+:Avaliar pedido;
+stop
+
+@enduml

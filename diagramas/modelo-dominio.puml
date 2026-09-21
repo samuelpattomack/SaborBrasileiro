@@ -1,0 +1,70 @@
+@startuml SaborBrasileiro - Modelo de Domínio
+
+skinparam classAttributeIconSize 0
+hide circle
+hide methods
+
+class Cliente {
+  nome
+  telefone
+  endereco
+}
+
+class Cozinheiro {
+  nome
+  endereco
+  descricao
+}
+
+class Entregador {
+  nome
+  veiculo
+}
+
+class Prato {
+  nome
+  descricao
+  preco
+  disponivel
+}
+
+class Pedido {
+  dataHora
+  status
+  valorTotal
+}
+
+class ItemPedido {
+  quantidade
+  precoUnitario
+}
+
+class Pagamento {
+  valor
+  formaPagamento
+  status
+}
+
+class CupomDesconto {
+  codigo
+  percentualDesconto
+  validade
+}
+
+class Avaliacao {
+  nota
+  comentario
+  data
+}
+
+Cliente "1" -- "0..*" Pedido : realiza
+Cozinheiro "1" -- "0..*" Prato : oferece
+Cozinheiro "1" -- "0..*" Pedido : recebe
+Pedido "1" -- "1..*" ItemPedido : contém
+ItemPedido "0..*" -- "1" Prato : refere-se a
+Pedido "1" -- "1" Pagamento : gera
+Pedido "0..1" -- "0..1" CupomDesconto : aplica
+Pedido "1" -- "0..1" Entregador : é entregue por
+Pedido "1" -- "0..1" Avaliacao : recebe
+
+@enduml
