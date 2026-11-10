@@ -1,0 +1,71 @@
+@startuml seq-03-aceitar-pedido-e-entrega
+skinparam shadowing false
+skinparam dpi 120
+skinparam NoteBackgroundColor #FFFDE7
+skinparam NoteBorderColor #E0C060
+skinparam ParticipantPadding 14
+
+actor Cozinheiro
+participant ControladorCozinha <<Controller>>
+actor Entregador
+participant ControladorEntrega <<Controller>>
+participant Pedido <<Domain>>
+participant NotificadorStatus <<Service>>
+actor Cliente
+
+== Cozinheiro aceita o pedido (UC06) ==
+Cozinheiro -> ControladorCozinha : 1: aceitarPedido(idPedido)
+note right of ControladorCozinha
+**GRASP: Controller**
+Controlador do caso de uso UC06,
+separado do checkout do cliente.
+end note
+ControladorCozinha -> Pedido : 2: pertenceA(cozinheiro)
+note right of Pedido
+**GRASP: Information Expert**
+Pedido sabe de qual cozinheiro é (RN03).
+end note
+Pedido --> ControladorCozinha : permitido : boolean
+ControladorCozinha -> Pedido : 3: aceitar()
+note right of Pedido
+**GRASP: Information Expert + High Cohesion**
+Muda o próprio status para "em preparo" (RN04).
+end note
+Pedido -> NotificadorStatus : 4: notificarMudanca(pedido)
+note right of NotificadorStatus
+**GRASP: Indirection + Low Coupling**
+Pedido não sabe como nem a quem avisar.
+end note
+NotificadorStatus -> Cliente : 5: enviar(cliente, "em preparo")
+note right of Cliente
+**GRASP: Pure Fabrication + Protected Variations**
+O canal de aviso (push, app) pode variar
+sem afetar Pedido.
+end note
+
+== Entregador aceita a entrega (UC07) ==
+Entregador -> ControladorEntrega : 6: aceitarEntrega(idPedido)
+note right of ControladorEntrega
+**GRASP: Controller**
+Controlador do caso de uso UC07.
+end note
+ControladorEntrega -> Entregador : 7: podeAceitarEntrega()
+note left of Entregador
+**GRASP: Information Expert**
+Só o Entregador sabe se já tem
+entrega em andamento (RN05).
+end note
+Entregador --> ControladorEntrega : permitido : boolean
+ControladorEntrega -> Pedido : 8: atribuirEntregador(entregador)
+note right of Pedido
+**GRASP: Information Expert**
+Pedido guarda o vínculo com o entregador
+e o status "a caminho".
+end note
+Pedido -> NotificadorStatus : 9: notificarMudanca(pedido)
+note right of NotificadorStatus
+**GRASP: Indirection**
+Mesmo mecanismo da mensagem 4,
+reaproveitado.
+end note
+@enduml

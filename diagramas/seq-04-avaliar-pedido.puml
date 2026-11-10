@@ -1,0 +1,58 @@
+@startuml seq-04-avaliar-pedido
+skinparam shadowing false
+skinparam dpi 120
+skinparam NoteBackgroundColor #FFFDE7
+skinparam NoteBorderColor #E0C060
+skinparam ParticipantPadding 14
+
+actor Cliente
+participant ControladorAvaliacao <<Controller>>
+participant Pedido <<Domain>>
+participant Avaliacao <<Domain>>
+participant Cozinheiro <<Domain>>
+participant Entregador <<Domain>>
+
+== Iniciando o caso de uso (UC08) ==
+Cliente -> ControladorAvaliacao : 1: avaliarPedido(idPedido, notaPrato, notaEntrega, comentario)
+note right of ControladorAvaliacao
+**GRASP: Controller**
+Recebe o evento de sistema
+do caso de uso UC08.
+end note
+ControladorAvaliacao -> Pedido : 2: podeSerAvaliado()
+note right of Pedido
+**GRASP: Information Expert**
+Só o Pedido sabe se já foi
+entregue (RN06).
+end note
+Pedido --> ControladorAvaliacao : permitido : boolean
+
+== Registrando a avaliação ==
+ControladorAvaliacao -> Pedido : 3: registrarAvaliacao(notaPrato, notaEntrega, comentario)
+note right of Pedido
+**GRASP: Information Expert + Creator**
+Pedido "recebe" a Avaliacao
+(modelo de domínio).
+end note
+create Avaliacao
+Pedido -> Avaliacao : 4: create(notaPrato, notaEntrega, comentario)
+note right of Avaliacao
+**GRASP: Creator**
+Pedido registra e usa a Avaliacao,
+então a instancia.
+end note
+
+== Atualizando as notas médias ==
+Pedido -> Cozinheiro : 5: atualizarMedia(notaPrato)
+note right of Cozinheiro
+**GRASP: Information Expert**
+Cozinheiro conhece suas avaliações
+anteriores (nota exibida na busca).
+end note
+Pedido -> Entregador : 6: atualizarMedia(notaEntrega)
+note right of Entregador
+**GRASP: Information Expert**
+Cada ator mantém a própria média.
+end note
+ControladorAvaliacao --> Cliente : avaliacaoRegistrada
+@enduml

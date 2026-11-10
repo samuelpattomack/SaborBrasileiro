@@ -14,11 +14,14 @@ class Cozinheiro {
   nome
   endereco
   descricao
+  notaMedia
 }
 
 class Entregador {
   nome
   veiculo
+  disponivel
+  notaMedia
 }
 
 class Prato {
@@ -52,7 +55,8 @@ class CupomDesconto {
 }
 
 class Avaliacao {
-  nota
+  notaPrato
+  notaEntrega
   comentario
   data
 }

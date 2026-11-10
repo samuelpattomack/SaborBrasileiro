@@ -1,0 +1,104 @@
+@startuml seq-01-realizar-pedido
+skinparam shadowing false
+skinparam dpi 120
+skinparam NoteBackgroundColor #FFFDE7
+skinparam NoteBorderColor #E0C060
+skinparam ParticipantPadding 14
+
+actor Cliente
+participant ControladorPedido <<Controller>>
+participant Pedido <<Domain>>
+participant ItemPedido <<Domain>>
+participant Prato <<Domain>>
+participant CupomDesconto <<Domain>>
+
+== Iniciando o caso de uso (UC04) ==
+Cliente -> ControladorPedido : 1: realizarPedido(cozinheiro, itens, cupom)
+note right of ControladorPedido
+**GRASP: Controller**
+Recebe o evento de sistema.
+Representa o caso de uso,
+não a tela nem um objeto de domínio.
+end note
+
+== Criando o Pedido ==
+create Pedido
+ControladorPedido -> Pedido : 2: create(cliente, cozinheiro)
+note right of Pedido
+**GRASP: Creator**
+O controlador registra o pedido em andamento
+e tem os dados de inicialização
+(cliente e cozinheiro).
+end note
+
+== Adicionando itens ==
+loop para cada item em itens
+  ControladorPedido -> Pedido : 3: adicionarItem(prato, qtd)
+  note right of Pedido
+  **GRASP: Information Expert + Creator**
+  Pedido mantém a coleção de itens
+  e agrega ItemPedido.
+  end note
+  Pedido -> Prato : 4: estaDisponivel()
+  note right of Prato
+  **GRASP: Information Expert**
+  Só o Prato sabe se está
+  disponível (RN07).
+  end note
+  Prato --> Pedido : disponivel : boolean
+  create ItemPedido
+  Pedido -> ItemPedido : 5: create(prato, qtd)
+  note right of ItemPedido
+  **GRASP: Creator**
+  Pedido contém e agrega ItemPedido,
+  portanto é quem o instancia.
+  end note
+  ItemPedido -> Prato : 6: getPreco()
+  note right of Prato
+  **GRASP: Information Expert**
+  O preço unitário pertence ao Prato.
+  end note
+  Prato --> ItemPedido : preco : double
+end
+
+== Aplicando cupom (extend, opcional) ==
+opt cliente informou cupom
+  ControladorPedido -> Pedido : 7: aplicarCupom(cupom)
+  note right of Pedido
+  **GRASP: Information Expert + Low Coupling**
+  Pedido conhece o subtotal e garante
+  um único cupom por pedido (RN02).
+  end note
+  Pedido -> CupomDesconto : 8: validar(dataAtual)
+  note right of CupomDesconto
+  **GRASP: Information Expert**
+  A validade é atributo do cupom.
+  end note
+  CupomDesconto --> Pedido : valido : boolean
+  Pedido -> CupomDesconto : 9: calcularDesconto(subtotal)
+  note right of CupomDesconto
+  **GRASP: Information Expert**
+  O percentual de desconto é do cupom.
+  end note
+  CupomDesconto --> Pedido : desconto : double
+end
+
+== Calculando o total ==
+ControladorPedido -> Pedido : 10: calcularTotal()
+note right of Pedido
+**GRASP: Information Expert**
+Pedido conhece seus itens
+e o desconto aplicado (RN08).
+end note
+loop para cada item do pedido
+  Pedido -> ItemPedido : 11: getSubtotal()
+  note right of ItemPedido
+  **GRASP: Information Expert + High Cohesion**
+  ItemPedido conhece quantidade
+  e preço unitário.
+  end note
+  ItemPedido --> Pedido : subtotal : double
+end
+Pedido --> ControladorPedido : total : double
+ControladorPedido --> Cliente : resumo do pedido (aguardando pagamento)
+@enduml

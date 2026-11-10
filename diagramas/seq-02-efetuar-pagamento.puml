@@ -1,0 +1,75 @@
+@startuml seq-02-efetuar-pagamento
+skinparam shadowing false
+skinparam dpi 120
+skinparam NoteBackgroundColor #FFFDE7
+skinparam NoteBorderColor #E0C060
+skinparam ParticipantPadding 14
+
+actor Cliente
+participant ControladorPedido <<Controller>>
+participant Pedido <<Domain>>
+participant ProcessadorPagamento <<Service>>
+participant MeioDePagamento <<Abstract>>
+participant Pagamento <<Domain>>
+
+== Iniciando o pagamento (UC05, incluído no UC04) ==
+Cliente -> ControladorPedido : 1: confirmarPagamento(pedido, meio)
+note right of ControladorPedido
+**GRASP: Controller**
+UC05 faz parte do fluxo de UC04,
+então o mesmo controlador continua
+coordenando o caso de uso.
+end note
+
+== Obtendo o valor ==
+ControladorPedido -> Pedido : 2: getTotal()
+note right of Pedido
+**GRASP: Information Expert**
+Pedido já conhece o total calculado.
+end note
+Pedido --> ControladorPedido : total : double
+
+== Processando o pagamento ==
+ControladorPedido -> ProcessadorPagamento : 3: processar(total, meio)
+note right of ProcessadorPagamento
+**GRASP: Pure Fabrication + Low Coupling**
+Nenhum objeto de domínio é bom candidato
+para falar com o gateway. Cria-se um
+serviço artificial que isola a integração.
+end note
+ProcessadorPagamento -> MeioDePagamento : 4: pagar(valor)
+note right of MeioDePagamento
+**GRASP: Polymorphism + Protected Variations**
+Receptor é a abstração. Em execução será
+PagamentoCartao ou PagamentoPix,
+sem if/else no processador.
+end note
+MeioDePagamento --> ProcessadorPagamento : aprovado : boolean
+ProcessadorPagamento --> ControladorPedido : aprovado : boolean
+
+== Registrando e confirmando ==
+alt pagamento aprovado
+  ControladorPedido -> Pedido : 5: registrarPagamento(total, meio)
+  note right of Pedido
+  **GRASP: Information Expert**
+  Pedido se relaciona com seu Pagamento
+  e controla o próprio status (RN01).
+  end note
+  create Pagamento
+  Pedido -> Pagamento : 6: create(valor, forma)
+  note right of Pagamento
+  **GRASP: Creator**
+  Pedido "gera" Pagamento
+  (modelo de domínio) e registra seus dados.
+  end note
+  Pedido -> Pedido : 7: confirmar()
+  note right of Pedido
+  **GRASP: Information Expert + High Cohesion**
+  A transição de status é regra do
+  próprio Pedido, não do controlador.
+  end note
+  ControladorPedido --> Cliente : pedidoConfirmado
+else pagamento recusado
+  ControladorPedido --> Cliente : pagamentoRecusado (pedido NÃO confirmado - RN01)
+end
+@enduml
