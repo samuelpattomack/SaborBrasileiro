@@ -9,7 +9,8 @@ Esta entrega cobre as seguintes etapas do processo:
 3. **Modelagem de Negócio** (stakeholders, regras de negócio, modelo de domínio conceitual e fluxo de atividades)
 4. **Prototipação** (wireframes de média fidelidade das 10 telas principais)
 5. **Especificação de Requisitos** (RF e RNF classificados no modelo FURPS+, com rastreabilidade)
-
+6. **Modelos de Interação com GRASP** (diagramas de sequência e tabelas de justificativa por padrão)
+   
 ## Sobre o projeto
 
 O **SaborBrasileiro** é uma plataforma de marketplace que conecta **cozinheiros caseiros** (pequenos produtores de comida feita em casa) a **clientes** de um bairro ou região, com entrega feita por **entregadores parceiros** cadastrados na plataforma — similar a um iFood, mas focado exclusivamente em comida caseira/artesanal, sem restaurantes formais.
