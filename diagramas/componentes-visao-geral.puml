@@ -1,0 +1,91 @@
+@startuml componentes-visao-geral
+skinparam shadowing false
+skinparam dpi 110
+skinparam componentStyle rectangle
+skinparam linetype ortho
+skinparam nodesep 45
+skinparam ranksep 60
+skinparam NoteBackgroundColor #FFFDE7
+skinparam NoteBorderColor #E0C060
+skinparam packageStyle rectangle
+skinparam ArrowColor #444444
+top to bottom direction
+
+package "Camada de Apresentação" as APR {
+  [AppMobileModule]
+}
+
+package "Camada de Aplicação" as APL {
+  [EntregaModule]
+  [CozinhaModule]
+  [CheckoutModule]
+}
+
+package "Camada de Domínio" as DOM {
+  [UsuarioModule]
+  [PedidoModule]
+  [CardapioModule]
+}
+
+package "Camada de Serviços Externos" as EXT {
+  [NotificacaoModule]
+  [PagamentoModule]
+}
+
+package "Camada de Infraestrutura" as INF {
+  [PersistenciaModule]
+}
+
+() IGestaoEntregas
+() IGestaoCozinha
+() ICheckout
+() IUsuarios
+() IPedido
+() ICardapio
+() INotificador
+() IProcessadorPagamento
+() IRepositorio
+
+' ordem horizontal dentro das camadas (reduz cruzamento de linhas)
+EntregaModule -[hidden]right- CozinhaModule
+CozinhaModule -[hidden]right- CheckoutModule
+UsuarioModule -[hidden]right- PedidoModule
+PedidoModule -[hidden]right- CardapioModule
+
+' interfaces fornecidas (linha sólida até a interface)
+EntregaModule -up- IGestaoEntregas
+CozinhaModule -up- IGestaoCozinha
+CheckoutModule -up- ICheckout
+UsuarioModule -up- IUsuarios
+PedidoModule -up- IPedido
+CardapioModule -up- ICardapio
+NotificacaoModule -up- INotificador
+PagamentoModule -up- IProcessadorPagamento
+PersistenciaModule -up- IRepositorio
+
+' interfaces requeridas: dependência <<usa>> aponta sempre para a abstração
+AppMobileModule ..> IGestaoEntregas
+AppMobileModule ..> IGestaoCozinha
+AppMobileModule ..> ICheckout
+
+EntregaModule ..> IUsuarios
+EntregaModule ..> IPedido
+CozinhaModule ..> IPedido
+CozinhaModule ..> ICardapio
+CheckoutModule ..> IPedido
+CheckoutModule ..> ICardapio
+CheckoutModule ..> IProcessadorPagamento
+
+PedidoModule ..> IUsuarios
+PedidoModule ..> ICardapio
+PedidoModule ..> INotificador
+
+APL ..> IRepositorio
+
+legend right
+  **Como ler**
+  Linha sólida até o círculo: interface **fornecida** pelo módulo.
+  Seta tracejada para o círculo: dependência <<usa>> (interface **requerida**).
+  Nenhuma seta aponta de um módulo direto para outro módulo (DIP).
+endlegend
+@enduml

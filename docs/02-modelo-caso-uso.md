@@ -27,6 +27,7 @@ Os requisitos completos (funcionais e não funcionais, classificados no modelo *
 | **Cozinheiro** | Usuário que cadastra cardápio e prepara os pedidos |
 | **Entregador** | Usuário que aceita e realiza a entrega dos pedidos |
 
+> Nesta entrega, o Administrador da plataforma foi mantido apenas no cenário de negócio; ele não gera casos de uso nesta primeira versão simplificada (poderá ser incluído em uma iteração futura, se o escopo crescer).
 
 ## 3. Casos de uso
 
@@ -47,6 +48,7 @@ Os requisitos completos (funcionais e não funcionais, classificados no modelo *
 - **UC04 (Realizar pedido)** `<<include>>` **UC05 (Efetuar pagamento)** — todo pedido exige pagamento para ser confirmado;
 - **UC04 (Realizar pedido)** pode ser estendido por **Aplicar cupom de desconto** (`<<extend>>`), quando o cliente possuir um cupom válido.
 
+> Para deixar o diagrama mais organizado e sem cruzamento de linhas, os casos de uso foram agrupados visualmente por área de atuação (Cliente, Cozinheiro e Entregador). Isso é apenas uma organização visual — cada ator continua se relacionando somente com os próprios casos de uso.
 
 ## 4. Diagrama de caso de uso (PlantUML)
 

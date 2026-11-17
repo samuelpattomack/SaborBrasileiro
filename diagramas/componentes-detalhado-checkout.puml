@@ -1,0 +1,60 @@
+@startuml componentes-detalhado-checkout
+skinparam shadowing false
+skinparam dpi 110
+skinparam componentStyle uml2
+skinparam nodesep 70
+skinparam ranksep 90
+skinparam NoteBackgroundColor #FFFDE7
+skinparam NoteBorderColor #E0C060
+top to bottom direction
+
+component AppMobileModule
+
+component CheckoutModule {
+  portin pICheckout
+  portout rIPedido
+  portout rICardapio
+  portout rIProcessadorPagamento
+  portout rIRepositorio
+}
+
+component PedidoModule
+component CardapioModule
+component PagamentoModule
+component PersistenciaModule
+
+interface ICheckout
+interface IPedido
+interface ICardapio
+interface IProcessadorPagamento
+interface IRepositorio
+
+AppMobileModule )-- ICheckout
+pICheckout -() ICheckout
+
+rIPedido )-- IPedido
+rICardapio )-- ICardapio
+rIProcessadorPagamento )-- IProcessadorPagamento
+rIRepositorio )-- IRepositorio
+
+IPedido -() PedidoModule
+ICardapio -() CardapioModule
+IProcessadorPagamento -() PagamentoModule
+IRepositorio -() PersistenciaModule
+
+note right of CheckoutModule
+**Como ler:** bola = interface fornecida, soquete = interface requerida.
+
+CheckoutModule depende apenas de abstrações,
+nunca das implementações concretas.
+**DIP aplicado.**
+Orquestra UC04 e UC05 (**GRASP: Controller**).
+end note
+
+note bottom of PagamentoModule
+**GRASP: Pure Fabrication**
+Isola o gateway de pagamento.
+Substituível sem impacto nos
+demais módulos (**OCP**).
+end note
+@enduml
